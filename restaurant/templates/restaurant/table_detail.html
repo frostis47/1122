@@ -1,0 +1,27 @@
+{% extends 'home.html'%}
+{% load my_tags %}
+{% block content %}
+<div class="album py-5 bg-body-tertiary">
+    <div class="container">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        <div class="col">
+          <img src="{{ table.image| media_filter }}" class="card-img-top" alt="{{ table.number }}">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <p class="card-text"> Стол № {{ tables.number }} </p>
+              <p class="card-text">  Цена: {{ tables.price }} руб</p>
+              <p class="card-text">  Мест: {{ tables.sitting }} </p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group, d-grid gap-2">
+                  <a class="btn btn-primary" href="{% url 'restaurant:table_update' tables.pk %}">Редактировать</a>
+                  <a href="{% url 'restaurant:table_delete' tables.pk %}" class="btn btn-danger">Удалить</a>
+                  <a class="btn btn-primary" href="{% url 'restaurant:home' %}">Назад</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

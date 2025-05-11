@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+
+    {% if user.is_authenticated and user.is_superuser %}
+        <h1>Админ понель в Table Reservations</h1> <!--    Разделение для модера и гостя</a>-->
+            <p>
+
+                    <a href="{% url 'users:user_list' %}" class="btn btn-primary">Перейти к Гостям</a>
+                <p>
+                    <a href="{% url 'restaurant:table_create' %}" class="btn btn-primary">Перейти к созданию стола</a>
+                    <a href="{% url 'restaurant:table_list' %}" class="btn btn-primary">Cтолы</a>
+                </p>
+                <p>
+                    <a href="{% url 'restaurant:order_create' %}" class="btn btn-primary">Перейти к созданию заказа</a>
+                    <a href="{% url 'restaurant:order_list' %}" class="btn btn-primary">Перейти к заказам</a>
+                    <a href="{% url 'restaurant:order_list_admin' %}" class="btn btn-primary">Перейти к заказам (admin)</a>
+                </p>
+            </p>
+    {% else %}
+
+    <h1>Table Reservations</h1>
+
+        {% if user.is_authenticated %}
+            <p>
+                <a href="{% url 'restaurant:order_create' %}" class="btn btn-primary">Бронирование стола</a>
+                <a href="{% url 'restaurant:order_list' %}" class="btn btn-primary">Перейти к заказу</a>
+            </p>
+                {% else %}
+                    <p>
+                        <a href="{% url 'users:login' %}" class="btn btn-primary">Войти</a>
+                        <a href="{% url 'users:register' %}" class="btn btn-primary">Регистрация</a>
+                    </p>
+        {% endif %}
+    {% endif %}
+{% endblock %}

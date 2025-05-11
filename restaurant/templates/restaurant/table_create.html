@@ -1,0 +1,17 @@
+{% extends 'home.html'%}
+
+{% block content %}
+<div class="album py-5 bg-body-tertiary">
+    <div class="container mt-5">
+        <h1 class="mb-4">Форма стола</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+                <a class="btn btn-primary" href="{% url 'restaurant:home' %}">Назад</a>
+        </form>
+    </div>
+</div>
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

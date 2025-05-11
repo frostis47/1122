@@ -1,48 +1,60 @@
 from django.db import models
-from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator, MaxValueValidator
-from datetime import datetime, timedelta
 
-class Restaurant(models.Model):
-    name = models.CharField(max_length=200, verbose_name="Название ресторана")
-    description = models.TextField(blank=True, verbose_name="Описание")
-    address = models.CharField(max_length=200, verbose_name="Адрес")
-    phone_number = models.CharField(max_length=20, verbose_name="Номер телефона")
-    image = models.ImageField(upload_to='restaurant_images/', blank=True, null=True, verbose_name="Изображение")
+from config import settings
+
+
+
+class TimeSection(models.Model):
+    time = models.TimeField()
 
     def __str__(self):
-        return self.name
+        return f"{self.time}"
 
-    class Meta:
-        verbose_name = "Ресторан"
-        verbose_name_plural = "Рестораны"
 
 class Table(models.Model):
-    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='tables', verbose_name="Ресторан")
-    table_number = models.IntegerField(unique=True, verbose_name="Номер столика")
-    capacity = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)], verbose_name="Вместимость")  # Пример: от 1 до 20 мест
+    """Модуль для столов"""
+
+    number = models.PositiveIntegerField(verbose_name="номер стола", help_text="Введите номер стола")
+    sitting = models.PositiveIntegerField(verbose_name="мест у стола", help_text="Введите сколько мест у стола")
+    content = models.TextField(verbose_name="содержимое", help_text="Введите содержимое")
+    price = models.CharField(max_length=100, verbose_name="Цена", help_text="Введите цену", default=3000)
+    image = models.ImageField(
+        upload_to="table_image/photo",
+        blank=True,
+        null=True,
+        verbose_name="фото",
+        help_text="Загрузити фотографию",
+    )
+    table_occupiers = models.BooleanField(verbose_name="занятость стола", default=False)
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="дата последнего изменения", blank=True, null=True)
 
     def __str__(self):
-        return f"Столик {self.table_number} (вместимость: {self.capacity})"
+        return f"{self.number}"
 
     class Meta:
-        verbose_name = "Столик"
-        verbose_name_plural = "Столики"
+        verbose_name = "стол"
+        verbose_name_plural = "столы"
+        ordering = ["number"]
 
-class Booking(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
-    table = models.ForeignKey(Table, on_delete=models.CASCADE, verbose_name="Столик")
-    booking_datetime = models.DateTimeField(verbose_name="Дата и время бронирования")
-    number_of_guests = models.IntegerField(validators=[MinValueValidator(1)], verbose_name="Количество гостей")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
-    notes = models.TextField(blank=True, verbose_name="Примечания")
-    is_active = models.BooleanField(default=True, verbose_name="Активно")
+
+class Order(models.Model):
+    """Модуль для заказов"""
+
+    table = models.ForeignKey(Table, on_delete=models.SET_NULL, blank=True, null=True)
+    time = models.ForeignKey(TimeSection, on_delete=models.SET_NULL, blank=True, null=True)
+    date = models.DateField()
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="orders",
+        verbose_name="Создатель заказа",
+    )
 
     def __str__(self):
-        return f"Бронь столика {self.table.table_number} на {self.booking_datetime.strftime('%Y-%m-%d %H:%M')}"
+        return f"{self.table}, {self.time}"
 
     class Meta:
-        verbose_name = "Бронь"
-        verbose_name_plural = "Брони"
-        ordering = ['-booking_datetime']  # Сортировка по убыванию даты бронирования
+        verbose_name = "заказ"
+        verbose_name_plural = "заказы "
