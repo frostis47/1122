@@ -14,7 +14,7 @@ class TableForm(forms.ModelForm):
     def clean_number(self):
         number = self.cleaned_data.get("number")
         if number in [table.number for table in Table.objects.all()]:
-            raise ValidationError("такой стол уже есть")
+            raise ValidationError("такой столик уже есть")
         return number
 
     def clean_sitting(self):

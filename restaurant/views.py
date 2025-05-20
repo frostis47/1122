@@ -48,13 +48,6 @@ class TableDetailView(LoginRequiredMixin, DetailView):
     context_object_name = "tables"
     permission_classes = [IsModerator]
 
-    # def get_queryset(self):
-    #     queryset = cache.get('category_queryset')
-    #     if not queryset:
-    #         queryset = super().get_queryset()
-    #         cache.set('category_queryset', queryset, 60 * 15)
-    #     return queryset
-
 
 class TableDeleteView(LoginRequiredMixin, DeleteView):
     """Метод для удаления стола"""
@@ -118,6 +111,7 @@ class OrderUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     permission_classes = [IsModerator]
 
     def get_object(self):
+        # Получаем заказ, которую нужно редактировать
         obj = super().get_object()
         if obj.owner != self.request.user:
             raise PermissionDenied("У вас нет прав для изменения этого заказа.")

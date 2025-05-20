@@ -1,29 +1,43 @@
-# Используем официальный образ Python
-FROM python:3.12
+FROM python:3.13
 
-# Устанавливаем рабочую директорию
-WORKDIR /app
+# Установка рабочей директории
+WORKDIR /1122
 
-# Устанавливаем зависимости системы
+# Установка необходимых системных зависимостей
 RUN apt-get update \
     && apt-get install -y gcc libpq-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Копируем файлы зависимостей
-COPY requirements.txt ./
+# Копирование файлов конфигурации Poetry
+COPY pyproject.toml poetry.lock ./
 
-# Устанавливаем зависимости Python
-RUN pip install --no-cache-dir -r requirements.txt
+# Установка pip и Poetry, а также зависимостей проекта
+RUN pip install --upgrade pip \
+    && pip install poetry \
+    && poetry config virtualenvs.create false \
+    && poetry install --no-root
 
-# Копируем весь код в контейнер
+# Установка Pillow и gunicorn
+RUN pip install Pillow gunicorn
+
+# Копирование остального кода приложения
 COPY . .
 
-# Создаем директорию для медиафайлов
-RUN mkdir -p /app/media
+# Создание пользователя для запуска приложения
+RUN adduser --disabled-password --gecos "" myuser
 
-# Открываем порт для сервера
+# Установка прав доступа к директории приложения
+RUN chown -R myuser:myuser /1122
+
+# Переключение на нового пользователя
+USER myuser
+
+# Открытие порта
 EXPOSE 8000
 
-# Команда для запуска сервера
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Команда для запуска приложения с использованием gunicorn
+CMD ["gunicorn", "1122.wsgi:application", "--bind", "0.0.0.0:8000"]
+
+
+

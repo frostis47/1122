@@ -1,8 +1,5 @@
 from django.db import models
-
 from config import settings
-
-
 
 class TimeSection(models.Model):
     time = models.TimeField()
@@ -10,14 +7,13 @@ class TimeSection(models.Model):
     def __str__(self):
         return f"{self.time}"
 
-
 class Table(models.Model):
     """Модуль для столов"""
 
     number = models.PositiveIntegerField(verbose_name="номер стола", help_text="Введите номер стола")
     sitting = models.PositiveIntegerField(verbose_name="мест у стола", help_text="Введите сколько мест у стола")
     content = models.TextField(verbose_name="содержимое", help_text="Введите содержимое")
-    price = models.CharField(max_length=100, verbose_name="Цена", help_text="Введите цену", default=3000)
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена", help_text="Введите цену", default=3000.00)
     image = models.ImageField(
         upload_to="table_image/photo",
         blank=True,
@@ -36,7 +32,6 @@ class Table(models.Model):
         verbose_name_plural = "столы"
         ordering = ["number"]
 
-
 class Order(models.Model):
     """Модуль для заказов"""
 
@@ -49,7 +44,7 @@ class Order(models.Model):
         blank=True,
         on_delete=models.CASCADE,
         related_name="orders",
-        verbose_name="Создатель заказа",
+        verbose_name="Заказчик",
     )
 
     def __str__(self):
@@ -57,4 +52,4 @@ class Order(models.Model):
 
     class Meta:
         verbose_name = "заказ"
-        verbose_name_plural = "заказы "
+        verbose_name_plural = "заказы"
