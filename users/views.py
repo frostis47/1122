@@ -16,15 +16,20 @@ class RegisterView(CreateView):
     success_url = reverse_lazy("users:login")
 
     def form_valid(self, form):
-        form.save()
-        send_mail(
-            subject="Добро пожаловать!",
-            message='Спасибо за регистрацию на нашем сайте "__"',
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[form.cleaned_data.get("email")],
-            fail_silently=False,
-        )
+        user = form.save()
+        try:
+            send_mail(
+                subject="Добро пожаловать!",
+                message='Спасибо за регистрацию на нашем сайте "__"',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[form.cleaned_data.get("email")],
+                fail_silently=False,
+            )
+        except Exception as e:
+            form.add_error(None, "Ошибка при отправке письма: {}".format(e))
+            return self.form_invalid(form)
         return super().form_valid(form)
+
 
 class UserListView(ListView):
     """Метод просмотра всех пользователей"""
