@@ -1,0 +1,35 @@
+{% extends 'home.html'%}
+{% load my_tags %}
+{% block content %}
+    <h2>Список столов</h2>
+    <div class="container">
+        <div class="row text-center">
+            {% for table in tables %}
+                <div class="col-3">
+                    <div class="card mb-4 box-shadow">
+                        <div class="card-header">
+                            <img src="{{ table.image| media_filter }}" class="card-img-top" alt="{{ table.number }}">
+                            <h4 class="my-0 font-weight-normal">Стол №{{ table.number }}</h4>
+                        </div>
+                        <div class="card-body">
+                            <h1 class="card-title pricing-card-title"> Цена {{ table.price }}Руб</h1>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+<div class="album py-5 bg-body-tertiary">
+    <div class="container mt-5">
+        <h1 class="mb-4">Форма заказа стола</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Заказать</button>
+
+                <a class="btn btn-primary" href="{% url 'restaurant:home' %}">Назад</a>
+        </form>
+    </div>
+</div>
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

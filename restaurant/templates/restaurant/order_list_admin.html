@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Список заказов{% endblock %}
+{% block content %}
+<h2>Заказ Стола</h2>
+<div class="container">
+    <div class="row text-center">
+        {% for order in orders %}
+        <div class="col-3">
+            <div class="card mb-4 box-shadow">
+              <div class="card-header">
+                <h1 class="card-title pricing-card-title"> Стол № {{ order.table.number }}</h1>
+              </div>
+                <div class="card-body">
+                    <p class="card-text"> Заказ на {{ order.date }} </p>
+                    <p class="card-text"> Время {{ order.time }}</p>
+                    <p class="card-text">  {{ user.email }}</p>
+
+
+                    <div class="btn-group">
+                      <a class="btn btn-primary" href="{% url 'restaurant:order_detail' order.pk %}">Подробно</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
